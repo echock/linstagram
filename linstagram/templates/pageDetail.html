@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}首页{% endblock %}
+{% block title %}详情页{% endblock %}
 {% block css %}/static/styles/pages/detail.css{%endblock%}
 {% block content %}
 <div class="page-main clearfix">
@@ -48,6 +48,7 @@
                 </li>
                 -->
                 {% for comment in image.comments%}
+                {%if loop.index>10%}{%break%}{%endif%}
                 <li>
                     <a class=" icon-remove" title="删除评论"></a>
                     <a class="_4zhc5 _iqaka" title={{comment.user.username}} href="/profile/{{comment.user.id}}" data-reactid=".0.1.0.0.0.2.1.2:$comment-17856951190001917.1">{{comment.user.username}}</a>
