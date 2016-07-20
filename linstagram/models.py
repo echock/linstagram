@@ -1,6 +1,6 @@
 # -*- encoding=UTF-8 -*-
 
-from linstagram import db,login_manager
+from linstagram import db, login_manager
 from datetime import datetime
 import random
 
@@ -45,9 +45,9 @@ class User(db.Model):
     salt = db.Column(db.String(32))
 
     head_url = db.Column(db.String(256))
-    images = db.relationship('Image',backref = 'user',lazy = 'dynamic')
+    images = db.relationship('Image', backref='user', lazy='dynamic')
 
-    def __init__(self, username, password,salt = ''):
+    def __init__(self, username, password, salt=''):
         self.username = username
         self.password = password
         self.salt = salt
@@ -55,9 +55,11 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %d %s>' % (self.id, self.username)
+
     @property
     def is_authenticated(self):
         return True
+
     @property
     def is_active(self):
         return True
@@ -65,8 +67,11 @@ class User(db.Model):
     @property
     def is_anonymous(self):
         return False
+
     def get_id(self):
         return self.id
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
