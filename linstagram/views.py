@@ -5,7 +5,7 @@ from linstagram import app, db
 from flask import render_template, redirect, request, flash, get_flashed_messages
 from models import Image, User
 import random, hashlib
-from flask_login import login_user,logout_user,current_user,login_required
+from flask_login import login_user, logout_user, current_user, login_required
 
 
 @app.route('/')
@@ -23,6 +23,7 @@ def image(image_id):
 
 
 @app.route('/profile/<int:user_id>')
+@login_required
 def profile(user_id):
     user = User.query.get(user_id)
     if user == None:
@@ -41,7 +42,7 @@ def regloginpage():
     msg = ''
     for m in get_flashed_messages(with_categories=False, category_filter=['reglogin']):
         msg = msg + m
-    return render_template('login.html', msg=msg)
+    return render_template('login.html', msg=msg,next = request.values.get('next'))
 
 
 @app.route('/reg/', methods={'post', 'get'})
@@ -62,4 +63,34 @@ def reg():
     user = User(username, password, salt)
     db.session.add(user)
     db.session.commit()
+    login_user(user)
+    next = request.values.get('next')
+    if next != None and next.startswith('/'):
+        return redirect(next)
+    return redirect('/')
+
+
+@app.route('/logout/')
+def logout():
+    logout_user()
+    return redirect('/')
+
+
+@app.route('/login/', methods={'post', 'get'})
+def login():
+    username = request.values.get('username').strip()
+    password = request.values.get('password').strip()
+    if username == '' or password == '':
+        return redirect_with_msg('/regloginpage/', u'用户名或密码不能为空', 'reglogin')
+    user = User.query.filter_by(username=username).first()
+    if user == None:
+        return redirect_with_msg('/regloginpage/', u'用户名不存在', 'reglogin')
+    m = hashlib.md5()
+    m.update(password + user.salt)
+    if (m.hexdigest() != user.password):
+        return redirect_with_msg('/regloginpage/', u'密码错误', 'reglogin')
+    login_user(user)
+    next = request.values.get('next')
+    if next!=None and next.startswith('/'):
+        return redirect(next)
     return redirect('/')

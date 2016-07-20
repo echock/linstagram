@@ -9,6 +9,7 @@ app.config.from_pyfile('app.conf')
 db = SQLAlchemy(app)
 app.secret_key = "linlin"
 login_manager=LoginManager(app)
+login_manager.login_view='/regloginpage/'
 
 
 from linstagram import views,models
