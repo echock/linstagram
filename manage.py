@@ -1,7 +1,7 @@
 # -*- encoding=UTF-8 -*-
 from sqlalchemy import or_
 from sqlalchemy.sql.elements import and_
-
+import unittest
 from linstagram import app, db
 from flask_script import Manager
 import random
@@ -12,6 +12,13 @@ manager = Manager(app)
 
 def get_image_url():
     return 'http://images.nowcoder.com/head/' + str(random.randint(0, 1000)) + 'm.png'
+
+@manager.command
+def run_test():
+    db.drop_all()
+    db.create_all()
+    tests=unittest.TestLoader().discover('./')
+    unittest.TextTestRunner().run(tests)
 
 
 @manager.command
